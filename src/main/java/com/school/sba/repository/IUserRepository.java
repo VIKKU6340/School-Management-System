@@ -7,7 +7,13 @@ import com.school.sba.entity.User;
 import com.school.sba.entity.enums.UserRole;
 
 @Repository
-public interface UserRepository extends JpaRepository<User, Integer> {
-	
+public interface IUserRepository extends JpaRepository<User, Integer> {
+
 	boolean existsByUserRole(UserRole userRole);
+
+//	boolean existsByIsDeletedAndUserRole(boolean b, UserRole userRole);
+
+	//	boolean findByIsDeletedAndUserRole(boolean b, UserRole userRole);
+
+	//	List<UserRole> findAllByUserRole(UserRole userRole);
 }

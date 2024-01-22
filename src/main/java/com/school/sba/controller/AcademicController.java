@@ -11,13 +11,19 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.school.sba.requestdto.AcademicProgramRequest;
+import com.school.sba.requestdto.SubjectRequest;
+import com.school.sba.responsedto.AcademicProgramResponse;
+import com.school.sba.service.IAcademicProgramService;
+import com.school.sba.util.ResponseStructure;
+
 
 
 @RestController
 public class AcademicController {
 	
 	@Autowired
-	private AcademicProgramService academicProgramService;
+	private IAcademicProgramService academicProgramService;
 	
 	@PostMapping("/schools/{schoolId}/academic-programs")
 	public ResponseEntity<ResponseStructure<AcademicProgramResponse>> createProgram(@PathVariable("schoolId") int schoolId,

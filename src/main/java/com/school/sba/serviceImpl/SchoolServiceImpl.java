@@ -7,16 +7,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-
 import com.school.sba.entity.School;
-
 import com.school.sba.entity.enums.UserRole;
 import com.school.sba.exception.AdminAlreadyExistException;
 import com.school.sba.exception.SchoolAlreadyExistException;
 import com.school.sba.exception.SchoolNotFoundByIdException;
 import com.school.sba.exception.UserNotFoundByIdException;
 import com.school.sba.repository.ISchoolRepository;
-import com.school.sba.repository.UserRepository;
+import com.school.sba.repository.IUserRepository;
 import com.school.sba.requestdto.SchoolRequest;
 import com.school.sba.responsedto.SchoolResponse;
 import com.school.sba.service.ISchoolService;
@@ -29,7 +27,7 @@ public class SchoolServiceImpl implements ISchoolService {
 	private ISchoolRepository schoolRepo;
 
 	@Autowired
-	private UserRepository userRepo;
+	private IUserRepository userRepo;
 
 	@Autowired
 	private ResponseStructure<School> responseStructure;
@@ -45,7 +43,12 @@ public class SchoolServiceImpl implements ISchoolService {
 	}
 
 	private SchoolResponse mapToSchoolResponse(School school) {
-		return SchoolResponse.builder().schoolId(school.getSchoolId()).schoolName(school.getSchoolName()).build();
+		return SchoolResponse.builder().schoolId(school.getSchoolId())
+				.schoolName(school.getSchoolName())
+				.schoolEmailId(school.getSchoolEmailId())
+				.schoolAddress(school.getSchoolAddress())
+				.schoolContactNumber(school.getSchoolContactNumber())
+				.build();
 	}
 
 	@Override
