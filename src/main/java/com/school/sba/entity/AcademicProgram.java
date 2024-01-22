@@ -38,5 +38,8 @@ public class AcademicProgram {
 	
 	@ManyToMany
 	private List<Subject> listOfSubject;
+	
+	@ManyToMany(mappedBy = "academicPrograms")
+	private List<User> users;
 
 }

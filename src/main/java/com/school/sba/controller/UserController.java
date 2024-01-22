@@ -6,9 +6,9 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-
 
 import com.school.sba.requestdto.UserRequest;
 import com.school.sba.responsedto.UserResponse;
@@ -18,7 +18,6 @@ import com.school.sba.util.ResponseStructure;
 
 
 @RestController
-
 public class UserController {
 	
 	@Autowired
@@ -47,5 +46,19 @@ public class UserController {
 		
 		return deleteUser;
 	}
+	
+	@PutMapping("/users/{userId}")
+	public ResponseEntity<ResponseStructure<UserResponse>> updateUser(@PathVariable("userId") int userId,
+			@RequestBody UserRequest userRequest){
+		return userService.updateUser(userId, userRequest);
+	}
 
+	@PutMapping(" /academic-programs/{programId}/users/{userId}")
+	public ResponseEntity<ResponseStructure<UserResponse>> addUserToProgram(@PathVariable Integer programId,
+			@PathVariable Integer userId){
+		ResponseEntity<ResponseStructure<UserResponse>> AssignUser=null;;
+		AssignUser = userService.addUserToProgram(programId,userId);
+		return AssignUser;
+			
+	}
 }

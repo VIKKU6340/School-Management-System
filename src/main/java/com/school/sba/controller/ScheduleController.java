@@ -9,12 +9,17 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.school.sba.requestdto.ScheduleRequest;
+import com.school.sba.responsedto.ScheduleResponse;
+import com.school.sba.service.IScheduleService;
+import com.school.sba.util.ResponseStructure;
+
 
 @RestController
 public class ScheduleController {
 
 	@Autowired
-	private ScheduleService scheduleService;
+	private IScheduleService scheduleService;
 
 	@PostMapping("/schools/{schoolId}/schedules")
 	public ResponseEntity<ResponseStructure<ScheduleResponse>> saveSchedule(@PathVariable("schoolId") int schoolId,
