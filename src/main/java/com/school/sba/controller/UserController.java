@@ -24,17 +24,17 @@ public class UserController {
 	private lUserService userService;
 	
 	@PostMapping("/users/register")
-	public ResponseEntity<ResponseStructure<UserResponse>> saveUser(@RequestBody UserRequest userRequest){
+	public ResponseEntity<ResponseStructure<UserResponse>> saveUser(@RequestBody UserRequest userRequest) {
 		ResponseEntity<ResponseStructure<UserResponse>> rs = userService.saveUser(userRequest);
 		return rs;
 	}
 	
 	@GetMapping("users/{userId}")
 	public ResponseEntity<ResponseStructure<UserResponse>> findUser(@PathVariable Integer userId){
+		
 		ResponseEntity<ResponseStructure<UserResponse>> findUser = null;
 
 		findUser = userService.findUser(userId);
-
 		return findUser;
 	}
 	
@@ -53,6 +53,7 @@ public class UserController {
 		return userService.updateUser(userId, userRequest);
 	}
 
+	
 	@PutMapping(" /academic-programs/{programId}/users/{userId}")
 	public ResponseEntity<ResponseStructure<UserResponse>> addUserToProgram(@PathVariable Integer programId,
 			@PathVariable Integer userId){

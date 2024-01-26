@@ -15,6 +15,8 @@ public interface ISubjectRepository extends JpaRepository<Subject, Integer>{
 
 	Optional<Subject> findBySubjectName(String subject);
 
+	
+	
 //	@Query(nativeQuery = true, value = "")
 //	List<Subject> findAllByProgramId(int programId);
 

@@ -85,8 +85,7 @@ public class ScheduleServiceImpl implements IScheduleService{
 						structure.setData(mapToScheduleResponse(schedule));
 
 						return new ResponseEntity<ResponseStructure<ScheduleResponse>>(structure, HttpStatus.CREATED);
-					}
-					else {
+					}else {
 						throw new ScheduleAlreadyPresentException("Schedule is already added");
 					}
 				})

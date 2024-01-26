@@ -27,10 +27,10 @@ public class SubjectController {
 		return subjectService.addSubject(programId, subjectRequest);
 	}
 	
-	@PutMapping("/academic-programs/{programId}")
-	public ResponseEntity<ResponseStructure<AcademicProgramResponse>> updateSubject(@PathVariable("programId") int programId,
-			@RequestBody SubjectRequest subjectRequest){
-		return subjectService.updateSubject(programId, subjectRequest);
-	}
+//	@PutMapping("/academic-programs/{programId}")
+//	public ResponseEntity<ResponseStructure<AcademicProgramResponse>> updateSubject(@PathVariable("programId") int programId,
+//			@RequestBody SubjectRequest subjectRequest){
+//		return subjectService.updateSubject(programId, subjectRequest);
+//	}
 
 }
