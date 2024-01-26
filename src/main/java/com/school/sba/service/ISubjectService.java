@@ -11,7 +11,7 @@ public interface ISubjectService {
 
 	ResponseEntity<ResponseStructure<AcademicProgramResponse>> addSubject(int programId, SubjectRequest subjectRequest);
 
-//	ResponseEntity<ResponseStructure<AcademicProgramResponse>> updateSubject(int programId,
-//			SubjectRequest subjectRequest);
+	ResponseEntity<ResponseStructure<AcademicProgramResponse>> updateSubject(int programId,
+			SubjectRequest subjectRequest);
 
 }
