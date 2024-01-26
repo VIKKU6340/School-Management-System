@@ -19,7 +19,7 @@ public interface ISchoolService {
 
 	ResponseEntity<ResponseStructure<School>> updateSchool(Integer schoolId, SchoolRequest schoolRequest);
 
-	ResponseEntity<ResponseStructure<School>> findSchool(Integer schoolId);
+//	ResponseEntity<ResponseStructure<School>> findSchool(Integer schoolId);
 
 //	ResponseEntity<ResponseStructure<List<School>>> findAllSchool();
 

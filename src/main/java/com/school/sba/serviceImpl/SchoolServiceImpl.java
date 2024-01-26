@@ -115,19 +115,19 @@ public class SchoolServiceImpl implements ISchoolService {
 
 	}
 
-	@Override
-	public ResponseEntity<ResponseStructure<School>> findSchool(Integer schoolId) throws SchoolNotFoundByIdException {
-
-		School fetchedSchool = schoolRepo.findById(schoolId)
-				.orElseThrow(() -> new SchoolNotFoundByIdException("SCHOOL NOT PRESENT"));
-
-		responseStructure.setStatus(HttpStatus.FOUND.value());
-		responseStructure.setMessage("School data found in database");
-		responseStructure.setData(fetchedSchool);
-
-		return new ResponseEntity<ResponseStructure<School>>(responseStructure, HttpStatus.FOUND);
-
-	}
+//	@Override
+//	public ResponseEntity<ResponseStructure<School>> findSchool(Integer schoolId) throws SchoolNotFoundByIdException {
+//
+//		School fetchedSchool = schoolRepo.findById(schoolId)
+//				.orElseThrow(() -> new SchoolNotFoundByIdException("SCHOOL NOT PRESENT"));
+//
+//		responseStructure.setStatus(HttpStatus.FOUND.value());
+//		responseStructure.setMessage("School data found in database");
+//		responseStructure.setData(fetchedSchool);
+//
+//		return new ResponseEntity<ResponseStructure<School>>(responseStructure, HttpStatus.FOUND);
+//
+//	}
 
 //	@Override
 //	public ResponseEntity<ResponseStructure<List<School>>> findAllSchool() {
