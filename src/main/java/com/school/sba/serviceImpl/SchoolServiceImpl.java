@@ -59,8 +59,10 @@ public class SchoolServiceImpl implements ISchoolService {
 			if (u.getUserRole().equals(UserRole.ADMIN)) {
 				if(u.getSchool()==null) {
 				School saveSchool = schoolRepo.save(mapToSchool(schoolRequest));
-				u.setSchool(saveSchool);
-				userRepo.save(u);
+				userRepo.findAll().forEach(userFromRepo -> {
+					userFromRepo.setSchool(saveSchool);
+					userRepo.save(u);
+				});
 				responseS.setStatus(HttpStatus.CREATED.value());
 				responseS.setMessage("School data inserted successfully");
 				responseS.setData(mapToSchoolResponse(saveSchool));

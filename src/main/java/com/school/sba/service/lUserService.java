@@ -19,6 +19,8 @@ public interface lUserService {
 	public ResponseEntity<ResponseStructure<UserResponse>> updateUser(int userId, UserRequest userRequest);
 
 	public ResponseEntity<ResponseStructure<UserResponse>> addUserToProgram(Integer programId, Integer userId);
+
+	ResponseEntity<ResponseStructure<UserResponse>> assignUserToProgram(Integer programId, Integer userId);
  
 
 }
