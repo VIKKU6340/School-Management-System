@@ -46,9 +46,9 @@ public class SchoolController {
 		return schoolService.findSchool(schoolId);
 	}
 
-	@GetMapping
-	public ResponseEntity<ResponseStructure<List<School>>> findAllSchool(){
-		return schoolService.findAllSchool();
-	}
+//	@GetMapping
+//	public ResponseEntity<ResponseStructure<List<School>>> findAllSchool(){
+//		return schoolService.findAllSchool();
+//	}
 	
 }
