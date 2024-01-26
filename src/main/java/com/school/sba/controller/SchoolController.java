@@ -31,10 +31,10 @@ public class SchoolController {
 		return schoolService.saveSchool( userId,schoolRequest);
 	}
 	
-	@DeleteMapping("/{schoolId}")
-	public ResponseEntity<ResponseStructure<School>> deleteSchool(@PathVariable Integer schoolId){
-		return schoolService.deleteSchool(schoolId);
-	}
+//	@DeleteMapping("/{schoolId}")
+//	public ResponseEntity<ResponseStructure<School>> deleteSchool(@PathVariable Integer schoolId){
+//		return schoolService.deleteSchool(schoolId);
+//	}
 	
 	@PutMapping("/{schoolId}")
 	public ResponseEntity<ResponseStructure<School>> updateSchool(@PathVariable Integer schoolId, @RequestBody SchoolRequest schoolRequest){

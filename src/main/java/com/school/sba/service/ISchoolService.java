@@ -15,7 +15,7 @@ public interface ISchoolService {
 
 	ResponseEntity<ResponseStructure<SchoolResponse>> saveSchool(Integer userId,SchoolRequest schoolRequest);
 	
-	ResponseEntity<ResponseStructure<School>> deleteSchool(Integer schoolId);
+//	ResponseEntity<ResponseStructure<School>> deleteSchool(Integer schoolId);
 
 	ResponseEntity<ResponseStructure<School>> updateSchool(Integer schoolId, SchoolRequest schoolRequest);
 
