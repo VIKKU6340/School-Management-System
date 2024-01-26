@@ -2,6 +2,7 @@ package com.school.sba.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,6 +30,13 @@ public class UserController {
 		return rs;
 	}
 	
+	@PreAuthorize("hasAuthority('ADMIN')")
+	@PostMapping("/users")
+	public ResponseEntity<ResponseStructure<UserResponse>> addOtherUser(@RequestBody UserRequest userRequest){
+		return userService.addOtherUser(userRequest);
+	}
+
+	
 	@GetMapping("users/{userId}")
 	public ResponseEntity<ResponseStructure<UserResponse>> findUser(@PathVariable Integer userId){
 		
@@ -38,6 +46,7 @@ public class UserController {
 		return findUser;
 	}
 	
+	@PreAuthorize("hasAuthority('ADMIN')")
 	@DeleteMapping("users/{userId}")
 	public ResponseEntity<ResponseStructure<UserResponse>> softDeleteUser(@PathVariable Integer userId){
 		ResponseEntity<ResponseStructure<UserResponse>> deleteUser = null;
@@ -47,6 +56,7 @@ public class UserController {
 		return deleteUser;
 	}
 	
+	@PreAuthorize("hasAuthority('ADMIN')")
 	@PutMapping("/users/{userId}")
 	public ResponseEntity<ResponseStructure<UserResponse>> updateUser(@PathVariable("userId") int userId,
 			@RequestBody UserRequest userRequest){
@@ -58,8 +68,17 @@ public class UserController {
 	public ResponseEntity<ResponseStructure<UserResponse>> addUserToProgram(@PathVariable Integer programId,
 			@PathVariable Integer userId){
 		ResponseEntity<ResponseStructure<UserResponse>> AssignUser=null;;
-		AssignUser = userService.addUserToProgram(programId,userId);
+		AssignUser = userService.assignUserToProgram(programId,userId);
 		return AssignUser;
 			
 	}
+	
+
+	@PreAuthorize("hasAuthority('ADMIN')")
+	@PutMapping("/subjects/{subjectId}/users/{userId}")
+	public ResponseEntity<ResponseStructure<UserResponse>> assignSubjectToTeacher(@PathVariable("subjectId") int subjectId,
+			@PathVariable("userId") int userId){
+		return userService.assignSubjectToTeacher(subjectId,userId);
+	}
+
 }

@@ -59,6 +59,11 @@ public class ApplicationHandler extends ResponseEntityExceptionHandler {
 		return structure(HttpStatus.BAD_REQUEST, exception.getMessage(), "School Already Exist to this ADMIN");
 	}
 	
+	@ExceptionHandler(AdminAlreadyFoundException.class)
+	public ResponseEntity<Object> handleAdminAlreadyFoundException(AdminAlreadyFoundException exception) {
+		return structure(HttpStatus.BAD_REQUEST, exception.getMessage(), "admin is already inserted");
+	}
+}
 	
 	
 	
