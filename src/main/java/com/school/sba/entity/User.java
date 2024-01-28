@@ -50,5 +50,8 @@ public class User {
 	
 	@ManyToMany
 	private List<AcademicProgram> academicPrograms;
+	
+	@ManyToOne
+	private Subject subject;
 
 }

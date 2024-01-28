@@ -25,7 +25,7 @@ public class UserController {
 	private lUserService userService;
 	
 	@PostMapping("/users/register")
-	public ResponseEntity<ResponseStructure<UserResponse>> saveUser(@RequestBody UserRequest userRequest) {
+	public ResponseEntity<ResponseStructure<UserResponse>> registerAdmin(@RequestBody UserRequest userRequest) {
 		ResponseEntity<ResponseStructure<UserResponse>> rs = userService.saveUser(userRequest);
 		return rs;
 	}
@@ -64,6 +64,7 @@ public class UserController {
 	}
 
 	
+	@PreAuthorize("hasAuthority('ADMIN')")
 	@PutMapping(" /academic-programs/{programId}/users/{userId}")
 	public ResponseEntity<ResponseStructure<UserResponse>> addUserToProgram(@PathVariable Integer programId,
 			@PathVariable Integer userId){
