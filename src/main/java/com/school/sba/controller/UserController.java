@@ -26,7 +26,7 @@ public class UserController {
 	
 	@PostMapping("/users/register")
 	public ResponseEntity<ResponseStructure<UserResponse>> registerAdmin(@RequestBody UserRequest userRequest) {
-		ResponseEntity<ResponseStructure<UserResponse>> rs = userService.saveUser(userRequest);
+		ResponseEntity<ResponseStructure<UserResponse>> rs = userService.registerAdmin(userRequest);
 		return rs;
 	}
 	

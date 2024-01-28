@@ -43,7 +43,7 @@ public class User {
 	private String userEmail;
 	private UserRole userRole;
 	
-	private boolean isdeleted;
+	private boolean isDeleted;
 	
 	@ManyToOne
 	private School school;
