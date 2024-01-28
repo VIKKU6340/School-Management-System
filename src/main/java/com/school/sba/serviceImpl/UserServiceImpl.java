@@ -1,6 +1,4 @@
-package com.school.sba.serviceimpl;
-
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+package com.school.sba.serviceImpl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +15,11 @@ import com.school.sba.entity.User;
 import com.school.sba.entity.enums.UserRole;
 import com.school.sba.exception.AcademicProgramNotFoundException;
 import com.school.sba.exception.AdminAlreadyExistException;
+import com.school.sba.exception.AdminCannotBeAssignedToAcademicProgram;
+import com.school.sba.exception.AdminNotFoundException;
+import com.school.sba.exception.OnlyTeacherCanBeAssignedToSubjectException;
+import com.school.sba.exception.SubjectCannotBeAssignedToStudentException;
+import com.school.sba.exception.SubjectNotFoundException;
 import com.school.sba.exception.UserNotFoundByIdException;
 import com.school.sba.repository.IAcademicProgramRepository;
 import com.school.sba.repository.ISchoolRepository;
@@ -229,4 +232,4 @@ public class UserServiceImpl implements lUserService {
 		}).orElseThrow(() -> new UserNotFoundByIdException("user not found"));
 	}
 
-}}
+}

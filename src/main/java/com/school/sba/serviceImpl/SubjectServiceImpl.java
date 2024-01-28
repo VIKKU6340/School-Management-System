@@ -16,6 +16,7 @@ import com.school.sba.repository.IAcademicProgramRepository;
 import com.school.sba.repository.ISubjectRepository;
 import com.school.sba.requestdto.SubjectRequest;
 import com.school.sba.responsedto.AcademicProgramResponse;
+import com.school.sba.responsedto.SubjectResponse;
 import com.school.sba.service.ISubjectService;
 import com.school.sba.util.ResponseStructure;
 
@@ -33,125 +34,148 @@ public class SubjectServiceImpl implements ISubjectService{
 	private ResponseStructure<AcademicProgramResponse> structure;
 	
 	@Autowired
+	private ResponseStructure<List<SubjectResponse>> listStructure;
+	
+	@Autowired
 	private AcademicProgramServiceImpl academicProgramServiceImpl;
+	
+	
+	
+	private List<SubjectResponse> mapTOListOfSubjectResponse(List<Subject> listOfSubjects) {
+		List<SubjectResponse> listOfSubjectResponse = new ArrayList<>();
+
+		listOfSubjects.forEach(subject -> {
+			SubjectResponse sr = new SubjectResponse();
+			sr.setSubjectId(subject.getSubjectId());
+			sr.setSubjectNames(subject.getSubjectName()); 
+			listOfSubjectResponse.add(sr);
+		});
+
+		return listOfSubjectResponse;
+	}
+
 
 	
 	@Override
 	public ResponseEntity<ResponseStructure<AcademicProgramResponse>> addSubject(int programId, SubjectRequest subjectRequest) {
 		return academicProgramRepository.findById(programId)
 				.map(academicProgram -> {
-					List<Subject> listOfSubjects = (academicProgram.getListOfSubject() != null) ? academicProgram.getListOfSubject() : new ArrayList<Subject>();
-
-
-					// to add the new project that are specified by the client
+					List<Subject> listOfSubjects = new ArrayList<Subject>();
+					
 					subjectRequest.getSubjectNames().forEach(name -> {
-						boolean isPresent = false;
-						for(Subject subject : listOfSubjects) {
-							isPresent = (name.equalsIgnoreCase(subject.getSubjectName())) ? true : false;
-							if(isPresent) break;
-						}
-						if(!isPresent) {
-							listOfSubjects.add(subjectRepository.findBySubjectName(name)
-									.orElseGet(() -> subjectRepository.save(Subject.builder().subjectName(name).build())));
-						}
+						Subject fetchedSubject = subjectRepository.findBySubjectName(name.toLowerCase()).map(subject -> {
+							return subject;
+						}).orElseGet( () -> {
+							Subject subject = new Subject();
+							subject.setSubjectName(name.toLowerCase());
+							subjectRepository.save(subject);
+							return subject;
+						});
+						listOfSubjects.add(fetchedSubject);
 					});
-
-
-					//to remove the subject that are not specified by the client
-					List<Subject> toBeRemoved = new ArrayList<Subject>();
-					listOfSubjects.forEach(subject -> {
-						boolean isPresent = false;
-						for(String name : subjectRequest.getSubjectNames()) {
-							isPresent = (subject.getSubjectName().equalsIgnoreCase(name)) ? true : false;
-							if(isPresent) break;
-						}
-						if(!isPresent) toBeRemoved.add(subject);
-					});
-
-					listOfSubjects.removeAll(toBeRemoved);
-
+					
 					academicProgram.setListOfSubject(listOfSubjects);
-
 					academicProgramRepository.save(academicProgram);
-
+					
 					structure.setStatus(HttpStatus.CREATED.value());
 					structure.setMessage("subjects have been updated successfully");
 					structure.setData(academicProgramServiceImpl.mapToAcademicProgramResponse(academicProgram));
-
+					
 					return new ResponseEntity<ResponseStructure<AcademicProgramResponse>>(structure, HttpStatus.CREATED);
-
+					
 				})
 				.orElseThrow(() -> new AcademicProgramNotFoundException("academic program not found"));
 
 	}
 
+
+
+//	@Override
+//	public ResponseEntity<ResponseStructure<AcademicProgramResponse>> updateSubject(int programId,
+//			SubjectRequest subjectRequest) {
+//		
+//		return academicProgramRepository.findById(programId)
+//		.map(academicProgram -> {
+//			
+//			List<Subject> listOfSubjects = new ArrayList<Subject>();
+//			
+//			List<Subject> listOfSubjectsFromDB = subjectRepository.findAll();
+//			
+//			List<String> subjectNames = subjectRequest.getSubjectNames();
+//			 
+//			Set<String> setOfSubjectNames = new HashSet<String>();
+//
+//			subjectNames.forEach(name -> {
+//				setOfSubjectNames.add(name.toLowerCase());
+//			});
+//			
+//			listOfSubjectsFromDB.forEach(sub -> {
+//				
+//				boolean check = setOfSubjectNames.add(sub.getSubjectName().toLowerCase());
+//				if(check) {
+//					listOfSubjects.add(sub);
+//				}
+//				else {
+//					setOfSubjectNames.remove(sub.getSubjectName().toLowerCase());
+//				}
+//				
+//			});
+//
+//            listOfSubjectsFromDB.forEach(sub -> {
+//                subjectNames.forEach(name -> {
+//                    boolean b = sub.getSubjectName().toLowerCase().equals(name.toLowerCase());
+//
+//                    if(b) {
+//                    	listOfSubjects.add(sub);
+//                    }
+//                    if(b == false){
+//                        setOfSubjectNames.remove(sub.getSubjectName().toLowerCase());
+//                    }
+//
+//                });
+//            });
+//
+//			setOfSubjectNames.forEach(name -> {
+//				Subject subject = new Subject();
+//				subject.setSubjectName(name);
+//				listOfSubjects.add(subject);
+//				subjectRepository.save(subject);
+//			});
+//			System.out.println(setOfSubjectNames);
+//			
+//			academicProgram.setListOfSubject(listOfSubjects);
+//			academicProgramRepository.save(academicProgram);
+//			
+//			structure.setStatus(HttpStatus.CREATED.value());
+//			structure.setMessage("subjects have been updated successfully");
+//			structure.setData(academicProgramServiceImpl.mapToAcademicProgramResponse(academicProgram));
+//			
+//			return new ResponseEntity<ResponseStructure<AcademicProgramResponse>>(structure, HttpStatus.CREATED);
+//			
+//		})
+//		.orElseThrow(() -> new AcademicProgramNotFoundException("academic program not found"));
+//	
+//	}
+
 	@Override
-	public ResponseEntity<ResponseStructure<AcademicProgramResponse>> updateSubject(int programId,
-			SubjectRequest subjectRequest) {
-		
-		return academicProgramRepository.findById(programId)
-		.map(academicProgram -> {
-			
-			List<Subject> listOfSubjects = new ArrayList<Subject>();
-			
-			List<Subject> listOfSubjectsFromDB = subjectRepository.findAll();
-			
-			List<String> subjectNames = subjectRequest.getSubjectNames();
-			 
-			Set<String> setOfSubjectNames = new HashSet<String>();
+	public ResponseEntity<ResponseStructure<List<SubjectResponse>>> findAllSubjects() {
+		List<Subject> listOfSubjects = subjectRepository.findAll();
 
-			subjectNames.forEach(name -> {
-				setOfSubjectNames.add(name.toLowerCase());
-			});
-			
-			listOfSubjectsFromDB.forEach(sub -> {
-				
-				boolean check = setOfSubjectNames.add(sub.getSubjectName().toLowerCase());
-				if(check) {
-					listOfSubjects.add(sub);
-				}
-				else {
-					setOfSubjectNames.remove(sub.getSubjectName().toLowerCase());
-				}
-				
-			});
+		if(listOfSubjects.isEmpty()) {
+			listStructure.setStatus(HttpStatus.NOT_FOUND.value());
+			listStructure.setMessage("No subjects found");
+			listStructure.setData(mapTOListOfSubjectResponse(listOfSubjects));
 
-            listOfSubjectsFromDB.forEach(sub -> {
-                subjectNames.forEach(name -> {
-                    boolean b = sub.getSubjectName().toLowerCase().equals(name.toLowerCase());
+			return new ResponseEntity<ResponseStructure<List<SubjectResponse>>>(listStructure, HttpStatus.NOT_FOUND);
+		}
+		else {
+			listStructure.setStatus(HttpStatus.FOUND.value());
+			listStructure.setMessage("list of subjects found");
+			listStructure.setData(mapTOListOfSubjectResponse(listOfSubjects));
 
-                    if(b) {
-                    	listOfSubjects.add(sub);
-                    }
-                    if(b == false){
-                        setOfSubjectNames.remove(sub.getSubjectName().toLowerCase());
-                    }
-
-                });
-            });
-
-			setOfSubjectNames.forEach(name -> {
-				Subject subject = new Subject();
-				subject.setSubjectName(name);
-				listOfSubjects.add(subject);
-				subjectRepository.save(subject);
-			});
-			System.out.println(setOfSubjectNames);
-			
-			academicProgram.setListOfSubject(listOfSubjects);
-			academicProgramRepository.save(academicProgram);
-			
-			structure.setStatus(HttpStatus.CREATED.value());
-			structure.setMessage("subjects have been updated successfully");
-			structure.setData(academicProgramServiceImpl.mapToAcademicProgramResponse(academicProgram));
-			
-			return new ResponseEntity<ResponseStructure<AcademicProgramResponse>>(structure, HttpStatus.CREATED);
-			
-		})
-		.orElseThrow(() -> new AcademicProgramNotFoundException("academic program not found"));
-	
+			return new ResponseEntity<ResponseStructure<List<SubjectResponse>>>(listStructure, HttpStatus.FOUND);
+		}
 	}
-	
 
 
 }
