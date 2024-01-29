@@ -9,8 +9,16 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import com.school.sba.exception.AdminAlreadyExistException;
+import com.school.sba.exception.AdminCannotBeAssignedToAcademicProgram;
+import com.school.sba.exception.AdminNotFoundException;
+import com.school.sba.exception.OnlyTeacherCanBeAssignedToSubjectException;
+import com.school.sba.exception.ScheduleAlreadyPresentException;
+import com.school.sba.exception.ScheduleNotFoundException;
 import com.school.sba.exception.SchoolAlreadyExistException;
+import com.school.sba.exception.SchoolInsertionFailedException;
 import com.school.sba.exception.SchoolNotFoundByIdException;
+import com.school.sba.exception.SubjectCannotBeAssignedToStudentException;
+import com.school.sba.exception.SubjectNotFoundException;
 import com.school.sba.exception.UserNotFoundByIdException;
 
 @RestControllerAdvice
@@ -50,12 +58,46 @@ public class ApplicationHandler extends ResponseEntityExceptionHandler {
 		return structure(HttpStatus.BAD_REQUEST, exception.getMessage(), "School Already Exist to this ADMIN");
 	}
 	
-	@ExceptionHandler(AdminAlreadyFoundException.class)
-	public ResponseEntity<Object> handleAdminAlreadyFoundException(AdminAlreadyFoundException exception) {
-		return structure(HttpStatus.BAD_REQUEST, exception.getMessage(), "admin is already inserted");
+	@ExceptionHandler(ScheduleNotFoundException.class)
+	public ResponseEntity<Object> handleScheduleNotFoundException(ScheduleNotFoundException exception) {
+		return structure(HttpStatus.NOT_FOUND, exception.getMessage(), "Schedule not found, Try adding the schedule first");
 	}
+	
+	
+	public ResponseEntity<Object> handleSchoolInsertionFailed(SchoolInsertionFailedException exception) {
+
+		return structure(HttpStatus.BAD_REQUEST, exception.getMessage(), "Only ADMIN cn create school");
+	}
+	
+	@ExceptionHandler(ScheduleAlreadyPresentException.class)
+	public ResponseEntity<Object> handleScheduleAlreadyPresentException(ScheduleAlreadyPresentException exception) {
+		return structure(HttpStatus.BAD_REQUEST, exception.getMessage(), "Schedule is already present and assigned to school");
+	}
+	
+	@ExceptionHandler(AdminNotFoundException.class)
+	public ResponseEntity<Object> handleAdminNotFoundException(AdminNotFoundException exception) {
+		return structure(HttpStatus.BAD_REQUEST, exception.getMessage(), "Login as Admin to register");
+	}
+	
+	@ExceptionHandler(SubjectNotFoundException.class)
+	public ResponseEntity<Object> handleSubjectNotFoundException(SubjectNotFoundException exception) {
+		return structure(HttpStatus.NOT_FOUND, exception.getMessage(), "subject not found by id");
+	}
+	
+	@ExceptionHandler(OnlyTeacherCanBeAssignedToSubjectException.class)
+	public ResponseEntity<Object> handleOnlyTeacherCanBeAssignedToSubjectException(OnlyTeacherCanBeAssignedToSubjectException exception) {
+		return structure(HttpStatus.BAD_REQUEST, exception.getMessage(), "subject can only assigned to  teacher");
+	}
+
+	@ExceptionHandler(AdminCannotBeAssignedToAcademicProgram.class)
+	public ResponseEntity<Object> handleAdminCannotBeAssignedToAcademicProgram(AdminCannotBeAssignedToAcademicProgram exception) {
+		return structure(HttpStatus.BAD_REQUEST, exception.getMessage(), "admin cannot be assigned to academic programs");
+	}
+	
+	@ExceptionHandler(SubjectCannotBeAssignedToStudentException.class)
+	public ResponseEntity<Object> handleSubjectCannotBeAssignedToStudentException(SubjectCannotBeAssignedToStudentException exception) {
+		return structure(HttpStatus.BAD_REQUEST, exception.getMessage(), "Subject Cannot Be Assigned To Student");
+	}
+	
 }
 	
-	
-	
-}
