@@ -30,9 +30,9 @@ public class ClassHour {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int classHourId;
-	private LocalDateTime classBeginsAt;
-	private LocalDateTime classEndsAt;
-	private int classRoomNumber;
+	private LocalDateTime beginsAt;
+	private LocalDateTime endsAt;
+	private int roomNo;
 
 	@Enumerated(EnumType.STRING)
 	private ClassStatus classStatus;

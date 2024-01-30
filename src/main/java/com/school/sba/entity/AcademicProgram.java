@@ -14,6 +14,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -48,6 +49,9 @@ public class AcademicProgram {
 	
 	@ManyToMany(mappedBy = "academicPrograms")
 	private List<User> users;
+	
+	@OneToMany(mappedBy = "academicProgram")
+	private List<ClassHour> classHours;
 	
 	
 

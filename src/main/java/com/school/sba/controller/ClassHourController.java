@@ -17,7 +17,7 @@ public class ClassHourController {
 
 	@PostMapping("/academic-program/{programId}/class-hours")
 	public ResponseEntity<ResponseStructure<String>> addClassHour(@PathVariable("programId") int programId){
-		return classHourService.addClassHour(programId);
+		return classHourService.generateClassHourForProgram(programId);
 	}
 
 }
