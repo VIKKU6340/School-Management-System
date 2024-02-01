@@ -1,9 +1,5 @@
 package com.school.sba.requestdto;
 
-import java.time.LocalTime;
-
-import com.school.sba.entity.enums.ClassStatus;
-
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,9 +7,9 @@ import lombok.Setter;
 @Setter
 public class ClassHourRequest {
 
-	private LocalTime classBeginsAt;
-	private LocalTime classEndsAt;
-	private int classRoomNumber;
-	private ClassStatus classStatus;
+	private int classHourId;
+	private int subjectId;
+	private int roomNo;
+	private int userId;
 
 }

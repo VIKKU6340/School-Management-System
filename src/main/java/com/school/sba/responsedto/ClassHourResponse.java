@@ -1,6 +1,6 @@
 package com.school.sba.responsedto;
 
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 
 import com.school.sba.entity.enums.ClassStatus;
 
@@ -18,8 +18,8 @@ import lombok.Setter;
 public class ClassHourResponse {
 
 	private int classHourId;
-	private LocalTime bginsAt;
-	private LocalTime endsAt;
+	private  LocalDateTime bginsAt;
+	private  LocalDateTime endsAt;
 	private int roomNo;
 	private ClassStatus classStatus;
 
