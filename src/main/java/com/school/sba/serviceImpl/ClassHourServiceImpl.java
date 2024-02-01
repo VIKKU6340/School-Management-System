@@ -51,7 +51,7 @@ public class ClassHourServiceImpl implements IClassHourService{
 
 
 	@Override
-	public ResponseEntity<ResponseStructure<String>> addClassHour(int programId) {
+	public ResponseEntity<ResponseStructure<String>> generateClassHourForProgram(int programId) {
 
 		return academicProgramRepository.findById(programId)
 				.map(academicProgram -> {
@@ -92,8 +92,8 @@ public class ClassHourServiceImpl implements IClassHourService{
 										System.out.println("inside if start time "+ beginsAt);
 										System.out.println("inside if ends time "+ endsAt);
 
-										classHour.setClassBeginsAt(beginsAt);
-										classHour.setClassEndsAt(endsAt);
+										classHour.setBeginsAt(beginsAt);
+										classHour.setEndsAt(endsAt);
 										classHour.setClassStatus(ClassStatus.NOT_SCHEDULED);
 
 										currentTime = endsAt;
@@ -101,8 +101,8 @@ public class ClassHourServiceImpl implements IClassHourService{
 									else
 									{
 										System.out.println("inside else");
-										classHour.setClassBeginsAt(currentTime);
-										classHour.setClassEndsAt(LocalDateTime.now().with(breakTimeEnd));
+										classHour.setBeginsAt(currentTime);
+										classHour.setEndsAt(LocalDateTime.now().with(breakTimeEnd));
 
 										classHour.setClassStatus(ClassStatus.BREAK_TIME);
 										currentTime = currentTime.plusMinutes(schedule.getBreakLengthInMin().toMinutes());
@@ -110,8 +110,8 @@ public class ClassHourServiceImpl implements IClassHourService{
 
 								}
 								else {
-									classHour.setClassBeginsAt(currentTime);
-									classHour.setClassEndsAt(LocalDateTime.now().with(lunchTimeEnd));
+									classHour.setBeginsAt(currentTime);
+									classHour.setEndsAt(LocalDateTime.now().with(lunchTimeEnd));
 									classHour.setClassStatus(ClassStatus.LUNCH_TIME);
 									currentTime = currentTime.plusMinutes(schedule.getLunchLengthInMin().toMinutes());
 								}

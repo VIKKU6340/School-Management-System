@@ -18,9 +18,9 @@ import lombok.Setter;
 public class ClassHourResponse {
 
 	private int classHourId;
-	private LocalTime classBeginsAt;
-	private LocalTime classEndsAt;
-	private int classRoomNumber;
+	private LocalTime bginsAt;
+	private LocalTime endsAt;
+	private int roomNo;
 	private ClassStatus classStatus;
 
 }

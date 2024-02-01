@@ -6,6 +6,6 @@ import com.school.sba.util.ResponseStructure;
 
 public interface IClassHourService {
 
-	ResponseEntity<ResponseStructure<String>> addClassHour(int programId);
+	ResponseEntity<ResponseStructure<String>> generateClassHourForProgram(int programId);
 
 }

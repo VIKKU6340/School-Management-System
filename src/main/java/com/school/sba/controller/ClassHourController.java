@@ -12,7 +12,7 @@ import com.school.sba.util.ResponseStructure;
 @RestController
 public class ClassHourController {
 
-	@Autowired
+	@Autowired	
 	private IClassHourService classHourService;
 
 	@PostMapping("/academic-program/{programId}/class-hours")
