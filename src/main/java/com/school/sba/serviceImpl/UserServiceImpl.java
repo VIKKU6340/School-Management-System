@@ -1,6 +1,7 @@
 package com.school.sba.serviceImpl;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.school.sba.entity.AcademicProgram;
 import com.school.sba.entity.School;
 import com.school.sba.entity.User;
 import com.school.sba.entity.enums.UserRole;
@@ -17,6 +19,7 @@ import com.school.sba.exception.AcademicProgramNotFoundException;
 import com.school.sba.exception.AdminAlreadyExistException;
 import com.school.sba.exception.AdminCannotBeAssignedToAcademicProgram;
 import com.school.sba.exception.AdminNotFoundException;
+import com.school.sba.exception.IllegalArguementException;
 import com.school.sba.exception.OnlyTeacherCanBeAssignedToSubjectException;
 import com.school.sba.exception.SubjectCannotBeAssignedToStudentException;
 import com.school.sba.exception.SubjectNotFoundException;
@@ -48,6 +51,9 @@ public class UserServiceImpl implements lUserService {
 
 	@Autowired
 	private IAcademicProgramRepository academicProgramRepository;
+	
+	@Autowired
+	private ResponseStructure<List<UserResponse>> listStructure;
 
 	@Autowired
 	private ResponseStructure<UserResponse> rsu;
@@ -59,19 +65,20 @@ public class UserServiceImpl implements lUserService {
 				.userRole(userRequest.getUserRole()).userContact(userRequest.getUserContact()).build();
 	}
 
-	private UserResponse mapToUserResponse(User user) {
-		List<String> listOfProgramName = new ArrayList<>();
+	private List<UserResponse> mapTOListOfUserResponse(List<User> listOfUsers) {
+		List<UserResponse> listOfUserResponse = new ArrayList<>();
 
-		if (user.getAcademicPrograms() != null) {
-			user.getAcademicPrograms().forEach(academicProgram -> {
-				listOfProgramName.add(academicProgram.getProgramName());
-			});
-		}
+		listOfUsers.forEach(user -> {
+			UserResponse ur = new UserResponse();
+			ur.setUserId(user.getUserId());
+			ur.setUserName(user.getUserName());
+			ur.setUserContact(user.getUserContact());
+			ur.setUserEmail(user.getUserEmail());
+			ur.setUserRole(user.getUserRole());
+			listOfUserResponse.add(ur);
+		});
 
-		return UserResponse.builder().userId(user.getUserId()).userName(user.getUserName())
-				.userEmail(user.getUserEmail()).userFirstName(user.getUserFirstName())
-				.userLastName(user.getUserLastName()).userRole(user.getUserRole()).userContact(user.getUserContact())
-				.academicPrograms(listOfProgramName).build();
+		return listOfUserResponse;
 	}
 
 	@Override
@@ -231,5 +238,39 @@ public class UserServiceImpl implements lUserService {
 			}
 		}).orElseThrow(() -> new UserNotFoundByIdException("user not found"));
 	}
+
+	@Override
+	public ResponseEntity<ResponseStructure<List<UserResponse>>> getUsersByRoleAndAcademicProgram(int programId,
+			String userRole) {
+		AcademicProgram academicProgram = academicProgramRepository.findById(programId).orElseThrow(()-> new AcademicProgramNotFoundException("Academic Program not found for given ID"));
+
+		List<User> listOfUsers = null;
+		 UserRole role = UserRole.valueOf(userRole.toUpperCase());
+
+		 if(role.equals(UserRole.ADMIN))
+			 throw  new  IllegalArguementException("admin is not assigned to academic program");
+		 if(EnumSet.allOf(UserRole.class).contains(role)) {
+
+		 listOfUsers = userRepo.findByUserRoleAndAcademicPrograms(role, academicProgram);
+
+		 }
+
+		 if(listOfUsers.isEmpty()) {
+				listStructure.setStatus(HttpStatus.NOT_FOUND.value());
+				listStructure.setMessage("No subjects found");
+				listStructure.setData(mapTOListOfUserResponse(listOfUsers));
+
+				return new ResponseEntity<ResponseStructure<List<UserResponse>>>(listStructure, HttpStatus.NOT_FOUND);
+			}
+			else {
+				listStructure.setStatus(HttpStatus.FOUND.value());
+				listStructure.setMessage("list of subjects found");
+				listStructure.setData(mapTOListOfUserResponse(listOfUsers));
+
+				return new ResponseEntity<ResponseStructure<List<UserResponse>>>(listStructure, HttpStatus.FOUND);
+			}
+	}
+
+	
 
 }

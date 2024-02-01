@@ -1,6 +1,6 @@
 package com.school.sba.requestdto;
 
-import java.time.LocalTime;
+import java.time.LocalDate;
 
 import com.school.sba.entity.enums.ProgramType;
 
@@ -13,7 +13,7 @@ public class AcademicProgramRequest {
 
 	private ProgramType programType;
 	private String programName;
-	private LocalTime programBeginsAt;
-	private LocalTime programEndsAt;
+	private LocalDate programBeginsAt;
+	private LocalDate programEndsAt;
 	
 }

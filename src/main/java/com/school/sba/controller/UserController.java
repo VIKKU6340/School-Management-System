@@ -1,5 +1,7 @@
 package com.school.sba.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -80,6 +82,12 @@ public class UserController {
 	public ResponseEntity<ResponseStructure<UserResponse>> assignSubjectToTeacher(@PathVariable("subjectId") int subjectId,
 			@PathVariable("userId") int userId){
 		return userService.assignSubjectToTeacher(subjectId,userId);
+	}
+	
+	@GetMapping("/academic-programs/{programId}/user-roles/{role}/users")
+	public ResponseEntity<ResponseStructure<List<UserResponse>>> getUsersByRoleAndAcademicProgram(@PathVariable("programId") int programId,
+			@PathVariable String role){
+		return userService.getUsersByRoleAndAcademicProgram(programId, role);
 	}
 
 }
