@@ -12,6 +12,8 @@ import com.school.sba.exception.SchoolAlreadyExistException;
 import com.school.sba.exception.SchoolInsertionFailedException;
 import com.school.sba.exception.SchoolNotFoundByIdException;
 import com.school.sba.exception.UserNotFoundByIdException;
+import com.school.sba.repository.IAcademicProgramRepository;
+import com.school.sba.repository.IClassHourRepository;
 import com.school.sba.repository.ISchoolRepository;
 import com.school.sba.repository.IUserRepository;
 import com.school.sba.requestdto.SchoolRequest;
@@ -27,6 +29,12 @@ public class SchoolServiceImpl implements ISchoolService {
 
 	@Autowired
 	private IUserRepository userRepo;
+	
+	@Autowired
+	private IClassHourRepository classHourRepo;
+
+	@Autowired
+	private IAcademicProgramRepository academicProgramRepo;
 
 	@Autowired
 	private ResponseStructure<School> responseStructure;
@@ -90,27 +98,23 @@ public class SchoolServiceImpl implements ISchoolService {
 
 	}
 
-//	@Override
-//	public ResponseEntity<ResponseStructure<School>> deleteSchool(Integer schoolId) {
-//
-//		School existingSchool = schoolRepo.findById(schoolId).orElseThrow(
-//				() -> new SchoolNotFoundByIdException("school object cannot be deleted due to absence of school id"));
-//
-//		schoolRepo.deleteById(schoolId);
-//
-//		responseStructure.setStatus(HttpStatus.OK.value());
-//		responseStructure.setMessage("School data deleted successfully from database");
-//		responseStructure.setData(existingSchool);
-//
-//		return new ResponseEntity<ResponseStructure<School>>(responseStructure, HttpStatus.OK);
-//	}
+	public void deleteSchool(int schoolId) {
+		schoolRepo.findByIsDeleted(true).forEach(school -> {
+
+			school.getListOfAcademicPrograms().forEach(ap->{
+				classHourRepo.deleteAll(ap.getClassHours());
+				academicProgramRepo.delete(ap);
+			});
+			userRepo.deleteAll(userRepo.findBySchool(school));
+			schoolRepo.delete(school);
+		});
+	}
 
 	@Override
 	public ResponseEntity<ResponseStructure<SchoolResponse>> updateSchool(Integer schoolId, SchoolRequest schoolRequest)
 			throws SchoolNotFoundByIdException {
 
-		return schoolRepo.findById(schoolId)
-				.map( school -> {
+		return schoolRepo.findById(schoolId).map( school -> {
 					school = mapToSchool(schoolRequest);
 					school.setSchoolId(schoolId);
 					school = schoolRepo.save(school);

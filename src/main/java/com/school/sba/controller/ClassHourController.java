@@ -25,12 +25,18 @@ public class ClassHourController {
 	public ResponseEntity<ResponseStructure<String>> generateClassHourForAcademicProgram(@PathVariable("programId") int programId){
 		return classHourService.generateClassHourForProgram(programId);
 	}
-	
-	
-	@PutMapping("/class-hours") 
-    public ResponseEntity<ResponseStructure<List<ClassHourResponse>>> assigningPeriods(@RequestBody List<ClassHourRequest> classHourRequest){
-    	return classHourService.assignPeriods(classHourRequest);
 
-}
+
+	@PutMapping("/class-hours") 
+	public ResponseEntity<ResponseStructure<List<ClassHourResponse>>> assigningPeriods(@RequestBody List<ClassHourRequest> classHourRequest){
+		return classHourService.assignPeriods(classHourRequest);
+
+	}
+	
+	 @PutMapping("/academic-program/{programId}/class-hours")
+	    public ResponseEntity<ResponseStructure<String>> duplicateClassHoursForNextWeek(@PathVariable("programId") int programId){	
+	    	return classHourService.duplicateClassHoursForNextWeek(programId);
+
+	    }
 
 }

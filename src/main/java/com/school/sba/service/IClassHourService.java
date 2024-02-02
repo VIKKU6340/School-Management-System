@@ -11,7 +11,10 @@ import com.school.sba.util.ResponseStructure;
 public interface IClassHourService {
 
 	ResponseEntity<ResponseStructure<String>> generateClassHourForProgram(int programId);
+	
 	ResponseEntity<ResponseStructure<List<ClassHourResponse>>> assignPeriods(List<ClassHourRequest> classHourRequest);
+	
+	ResponseEntity<ResponseStructure<String>> duplicateClassHoursForNextWeek(int programId);
 	
 
 }

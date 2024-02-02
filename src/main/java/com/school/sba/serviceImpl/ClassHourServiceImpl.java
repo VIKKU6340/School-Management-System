@@ -194,38 +194,46 @@ public class ClassHourServiceImpl implements IClassHourService{
 		return null;
 	}
 	
-//	@Override
-//	public ResponseEntity<ResponseStructure<String>> duplicateClassHoursForNextWeek(int programId) {
-//		AcademicProgram academicProgram = academicProgramRepo.findById(programId)
-//				.orElseThrow(() -> new AcademicProgramNotFoundException("Academic program not found"));
-//
-//		duplicateClassHoursForNextWeek(academicProgram);
-//
-//		structure.setStatus(HttpStatus.CREATED.value());
-//		structure.setMessage("Class hours duplicated for the next week successfully");
-//		structure.setData("Class hours duplicated for the next week successfully");
-//
-//		return new ResponseEntity<>(structure, HttpStatus.CREATED);
-//	}
-//	
-	public void duplicateClassHoursForNextWeek(AcademicProgram academicProgram) {
-		List<ClassHour> classHoursForCurrentWeek = classHourRepo.findByAcademicProgramAndBeginsAtAfterAndBeginsAtBefore(
-				academicProgram, LocalDateTime.now().with(DayOfWeek.MONDAY).truncatedTo(ChronoUnit.DAYS),
-				LocalDateTime.now().with(DayOfWeek.SUNDAY).truncatedTo(ChronoUnit.DAYS));
+	@Override
+	public ResponseEntity<ResponseStructure<String>> duplicateClassHoursForNextWeek(int programId) {
+		AcademicProgram academicProgram = academicProgramRepo.findById(programId)
+				.orElseThrow(() -> new AcademicProgramNotFoundException("Academic program not found"));
 
-		List<ClassHour> duplicatedClassHoursForNextWeek = new ArrayList<>();
+		duplicateClassHoursForNextWeek(academicProgram);
 
-		for (ClassHour classHour : classHoursForCurrentWeek) {
-			ClassHour duplicatedClassHour = ClassHour.builder().academicPrograms(academicProgram)
-					.subject(classHour.getSubject()).beginsAt(classHour.getBeginsAt().plusWeeks(1))
-					.endsAt(classHour.getEndsAt().plusWeeks(1)).roomNo(classHour.getRoomNo())
-					.classStatus(classHour.getClassStatus()).user(classHour.getUser()).build();
+		structure.setStatus(HttpStatus.CREATED.value());
+		structure.setMessage("Class hours duplicated for the next week successfully");
+		structure.setData("Class hours duplicated for the next week successfully");
 
-			duplicatedClassHoursForNextWeek.add(duplicatedClassHour);
-		}
-
-		classHourRepo.saveAll(duplicatedClassHoursForNextWeek);
+		return new ResponseEntity<>(structure, HttpStatus.CREATED);
 	}
+	
+	
+	private void duplicateClassHoursForNextWeek(AcademicProgram academicProgram) {
+        List<ClassHour> classHoursForCurrentWeek = classHourRepo.findByAcademicProgramAndBeginsAtAfterAndBeginsAtBefore(
+        		academicProgram,
+                LocalDateTime.now().with(DayOfWeek.MONDAY).truncatedTo(ChronoUnit.DAYS),
+                LocalDateTime.now().with(DayOfWeek.SUNDAY).plusDays(1).truncatedTo(ChronoUnit.DAYS)   
+        );
+
+        List<ClassHour> duplicatedClassHoursForNextWeek = new ArrayList<>();
+
+        for (ClassHour classHour : classHoursForCurrentWeek) {
+            ClassHour duplicatedClassHour = ClassHour.builder()
+                    .academicPrograms(academicProgram)
+                    .subject(classHour.getSubject())
+                    .beginsAt(classHour.getBeginsAt().plusWeeks(1))
+                    .endsAt(classHour.getEndsAt().plusWeeks(1))
+                    .roomNo(classHour.getRoomNo())
+                    .classStatus(classHour.getClassStatus())
+                    .user(classHour.getUser())
+                    .build();
+
+            duplicatedClassHoursForNextWeek.add(duplicatedClassHour);
+        }
+
+        classHourRepo.saveAll(duplicatedClassHoursForNextWeek);
+    }
 
 
 }
