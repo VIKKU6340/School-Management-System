@@ -51,7 +51,7 @@ public class UserServiceImpl implements lUserService {
 
 	@Autowired
 	private IAcademicProgramRepository academicProgramRepository;
-	
+
 	@Autowired
 	private ResponseStructure<List<UserResponse>> listStructure;
 
@@ -63,6 +63,22 @@ public class UserServiceImpl implements lUserService {
 				.userPass(passwordEncoder.encode(userRequest.getUserPass()))
 				.userFirstName(userRequest.getUserFirstName()).userLastName(userRequest.getUserLastName())
 				.userRole(userRequest.getUserRole()).userContact(userRequest.getUserContact()).build();
+	}
+
+
+	private UserResponse mapToUserResponse(User user) {
+		List<String> listOfProgramName = new ArrayList<>();
+
+		if (user.getAcademicPrograms() != null) {
+			user.getAcademicPrograms().forEach(academicProgram -> {
+				listOfProgramName.add(academicProgram.getProgramName());
+			});
+		}
+
+		return UserResponse.builder().userId(user.getUserId()).userName(user.getUserName())
+				.userEmail(user.getUserEmail()).userFirstName(user.getUserFirstName())
+				.userLastName(user.getUserLastName()).userRole(user.getUserRole()).userContact(user.getUserContact())
+				.academicPrograms(listOfProgramName).build();
 	}
 
 	private List<UserResponse> mapTOListOfUserResponse(List<User> listOfUsers) {
@@ -144,6 +160,8 @@ public class UserServiceImpl implements lUserService {
 
 	}
 
+
+
 	@Override
 	public ResponseEntity<ResponseStructure<UserResponse>> assignUserToProgram(Integer programId, Integer userId) {
 		return userRepo.findById(userId).map(user -> {
@@ -151,9 +169,10 @@ public class UserServiceImpl implements lUserService {
 				throw new AdminCannotBeAssignedToAcademicProgram("admin cannot be assigned");
 			} else {
 				return academicProgramRepository.findById(programId).map(academicProgram -> {
-					if (academicProgram.getListOfSubject().contains(user.getSubject())) {
+					if (user.getUserRole().equals(UserRole.TEACHER)) {
 
-						if (user.getUserRole().equals(UserRole.TEACHER)) {
+						if (academicProgram.getListOfSubject().contains(user.getSubject())) {
+
 
 							academicProgram.getUsers().add(user);
 							user.getAcademicPrograms().add(academicProgram);
@@ -170,9 +189,23 @@ public class UserServiceImpl implements lUserService {
 						} else {
 							throw new SubjectCannotBeAssignedToStudentException("subject can't be assigned to subject");
 						}
-					} else {
-						throw new SubjectNotFoundException("subject not found");
 					}
+					if (user.getUserRole().equals(UserRole.STUDENT)) {
+
+						academicProgram.getUsers().add(user);
+						user.getAcademicPrograms().add(academicProgram);
+
+						userRepo.save(user);
+						academicProgramRepository.save(academicProgram);
+
+						rsu.setStatus(HttpStatus.OK.value());
+						rsu.setMessage("Student to academic program successfully");
+						rsu.setData(mapToUserResponse(user));
+
+						return new ResponseEntity<ResponseStructure<UserResponse>>(rsu, HttpStatus.OK);
+
+					} else
+						throw new RuntimeException();
 
 				}).orElseThrow(() -> new AcademicProgramNotFoundException("academic program not found"));
 			}
@@ -245,32 +278,32 @@ public class UserServiceImpl implements lUserService {
 		AcademicProgram academicProgram = academicProgramRepository.findById(programId).orElseThrow(()-> new AcademicProgramNotFoundException("Academic Program not found for given ID"));
 
 		List<User> listOfUsers = null;
-		 UserRole role = UserRole.valueOf(userRole.toUpperCase());
+		UserRole role = UserRole.valueOf(userRole.toUpperCase());
 
-		 if(role.equals(UserRole.ADMIN))
-			 throw  new  IllegalArguementException("admin is not assigned to academic program");
-		 if(EnumSet.allOf(UserRole.class).contains(role)) {
+		if(role.equals(UserRole.ADMIN))
+			throw  new  IllegalArguementException("admin is not assigned to academic program");
+		if(EnumSet.allOf(UserRole.class).contains(role)) {
 
-		 listOfUsers = userRepo.findByUserRoleAndAcademicPrograms(role, academicProgram);
+			listOfUsers = userRepo.findByUserRoleAndAcademicPrograms(role, academicProgram);
 
-		 }
+		}
 
-		 if(listOfUsers.isEmpty()) {
-				listStructure.setStatus(HttpStatus.NOT_FOUND.value());
-				listStructure.setMessage("No subjects found");
-				listStructure.setData(mapTOListOfUserResponse(listOfUsers));
+		if(listOfUsers.isEmpty()) {
+			listStructure.setStatus(HttpStatus.NOT_FOUND.value());
+			listStructure.setMessage("No subjects found");
+			listStructure.setData(mapTOListOfUserResponse(listOfUsers));
 
-				return new ResponseEntity<ResponseStructure<List<UserResponse>>>(listStructure, HttpStatus.NOT_FOUND);
-			}
-			else {
-				listStructure.setStatus(HttpStatus.FOUND.value());
-				listStructure.setMessage("list of subjects found");
-				listStructure.setData(mapTOListOfUserResponse(listOfUsers));
+			return new ResponseEntity<ResponseStructure<List<UserResponse>>>(listStructure, HttpStatus.NOT_FOUND);
+		}
+		else {
+			listStructure.setStatus(HttpStatus.FOUND.value());
+			listStructure.setMessage("list of subjects found");
+			listStructure.setData(mapTOListOfUserResponse(listOfUsers));
 
-				return new ResponseEntity<ResponseStructure<List<UserResponse>>>(listStructure, HttpStatus.FOUND);
-			}
+			return new ResponseEntity<ResponseStructure<List<UserResponse>>>(listStructure, HttpStatus.FOUND);
+		}
 	}
 
-	
+
 
 }
