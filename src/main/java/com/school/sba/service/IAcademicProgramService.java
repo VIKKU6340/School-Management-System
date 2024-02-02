@@ -19,4 +19,6 @@ public interface IAcademicProgramService {
 //	ResponseEntity<ResponseStructure<AcademicProgramResponse>> updateSubject(int programId,
 //			SubjectRequest subjectRequest);
 	
+	ResponseEntity<ResponseStructure<AcademicProgramResponse>> softDeleteacademicProgram(Integer programId);
+	
 }

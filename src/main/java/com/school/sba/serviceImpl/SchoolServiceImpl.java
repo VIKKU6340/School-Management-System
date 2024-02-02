@@ -90,20 +90,20 @@ public class SchoolServiceImpl implements ISchoolService {
 
 	}
 
-	@Override
-	public ResponseEntity<ResponseStructure<School>> deleteSchool(Integer schoolId) {
-
-		School existingSchool = schoolRepo.findById(schoolId).orElseThrow(
-				() -> new SchoolNotFoundByIdException("school object cannot be deleted due to absence of school id"));
-
-		schoolRepo.deleteById(schoolId);
-
-		responseStructure.setStatus(HttpStatus.OK.value());
-		responseStructure.setMessage("School data deleted successfully from database");
-		responseStructure.setData(existingSchool);
-
-		return new ResponseEntity<ResponseStructure<School>>(responseStructure, HttpStatus.OK);
-	}
+//	@Override
+//	public ResponseEntity<ResponseStructure<School>> deleteSchool(Integer schoolId) {
+//
+//		School existingSchool = schoolRepo.findById(schoolId).orElseThrow(
+//				() -> new SchoolNotFoundByIdException("school object cannot be deleted due to absence of school id"));
+//
+//		schoolRepo.deleteById(schoolId);
+//
+//		responseStructure.setStatus(HttpStatus.OK.value());
+//		responseStructure.setMessage("School data deleted successfully from database");
+//		responseStructure.setData(existingSchool);
+//
+//		return new ResponseEntity<ResponseStructure<School>>(responseStructure, HttpStatus.OK);
+//	}
 
 	@Override
 	public ResponseEntity<ResponseStructure<SchoolResponse>> updateSchool(Integer schoolId, SchoolRequest schoolRequest)
@@ -138,6 +138,25 @@ public class SchoolServiceImpl implements ISchoolService {
 		responseStructure.setData(fetchedSchool);
 
 		return new ResponseEntity<ResponseStructure<School>>(responseStructure, HttpStatus.FOUND);
+
+	}
+	
+	@Override
+	public ResponseEntity<ResponseStructure<SchoolResponse>> softDeleteSchool(Integer schoolId) {
+		return schoolRepo.findById(schoolId).map(school -> {
+			if (school.isDeleted()) {
+				throw new SchoolNotFoundByIdException("school already deleted");
+			}
+
+			school.setDeleted(true);
+			schoolRepo.save(school);
+
+			responseS.setStatus(HttpStatus.OK.value());
+			responseS.setMessage("School deleted successfully");
+			responseS.setData(mapToSchoolResponse(school));
+
+			return new ResponseEntity<ResponseStructure<SchoolResponse>>(responseS, HttpStatus.OK);
+		}).orElseThrow(() -> new SchoolNotFoundByIdException("school not found"));
 
 	}
 

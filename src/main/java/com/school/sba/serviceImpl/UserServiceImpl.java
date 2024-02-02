@@ -12,6 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.school.sba.entity.AcademicProgram;
+import com.school.sba.entity.ClassHour;
 import com.school.sba.entity.School;
 import com.school.sba.entity.User;
 import com.school.sba.entity.enums.UserRole;
@@ -25,13 +26,15 @@ import com.school.sba.exception.SubjectCannotBeAssignedToStudentException;
 import com.school.sba.exception.SubjectNotFoundException;
 import com.school.sba.exception.UserNotFoundByIdException;
 import com.school.sba.repository.IAcademicProgramRepository;
-import com.school.sba.repository.ISchoolRepository;
+import com.school.sba.repository.IClassHourRepository;
 import com.school.sba.repository.ISubjectRepository;
 import com.school.sba.repository.IUserRepository;
 import com.school.sba.requestdto.UserRequest;
 import com.school.sba.responsedto.UserResponse;
 import com.school.sba.service.lUserService;
 import com.school.sba.util.ResponseStructure;
+
+import jakarta.transaction.Transactional;
 
 
 @Service
@@ -47,10 +50,10 @@ public class UserServiceImpl implements lUserService {
 	private ISubjectRepository subjectRepository;
 
 	@Autowired
-	private ISchoolRepository schoolRepository;
+	private IAcademicProgramRepository academicProgramRepository;
 
 	@Autowired
-	private IAcademicProgramRepository academicProgramRepository;
+	private  IClassHourRepository classHourRepo;
 
 	@Autowired
 	private ResponseStructure<List<UserResponse>> listStructure;
@@ -275,27 +278,27 @@ public class UserServiceImpl implements lUserService {
 	@Override
 	public ResponseEntity<ResponseStructure<List<UserResponse>>> getUsersByRoleAndAcademicProgram(int programId,
 			String userRole) {
-		AcademicProgram academicProgram = academicProgramRepository.findById(programId).orElseThrow(()-> new AcademicProgramNotFoundException("Academic Program not found for given ID"));
+		AcademicProgram academicProgram = academicProgramRepository.findById(programId)
+				.orElseThrow(()-> new AcademicProgramNotFoundException("Academic Program not found for given ID"));
 
 		List<User> listOfUsers = null;
 		UserRole role = UserRole.valueOf(userRole.toUpperCase());
 
-		if(role.equals(UserRole.ADMIN))
-			throw  new  IllegalArguementException("admin is not assigned to academic program");
-		if(EnumSet.allOf(UserRole.class).contains(role)) {
+		if (role.equals(UserRole.ADMIN))
+			throw new IllegalArguementException("admin is not assigned to academic program");
+		if (EnumSet.allOf(UserRole.class).contains(role)) {
 
 			listOfUsers = userRepo.findByUserRoleAndAcademicPrograms(role, academicProgram);
 
 		}
 
-		if(listOfUsers.isEmpty()) {
+		if (listOfUsers.isEmpty()) {
 			listStructure.setStatus(HttpStatus.NOT_FOUND.value());
 			listStructure.setMessage("No subjects found");
 			listStructure.setData(mapTOListOfUserResponse(listOfUsers));
 
 			return new ResponseEntity<ResponseStructure<List<UserResponse>>>(listStructure, HttpStatus.NOT_FOUND);
-		}
-		else {
+		} else {
 			listStructure.setStatus(HttpStatus.FOUND.value());
 			listStructure.setMessage("list of subjects found");
 			listStructure.setData(mapTOListOfUserResponse(listOfUsers));
@@ -303,6 +306,31 @@ public class UserServiceImpl implements lUserService {
 			return new ResponseEntity<ResponseStructure<List<UserResponse>>>(listStructure, HttpStatus.FOUND);
 		}
 	}
+	
+	@Transactional
+	public void hardDeleteUser(int userId) {
+		User user = userRepo.findById(userId).orElseThrow(() -> new UserNotFoundByIdException("User not found by Id"));
+
+
+ 
+			List<ClassHour> classHours = classHourRepo.findByUser(user);
+			for (ClassHour classHour : classHours) {
+				classHour.setUser(null);
+				classHourRepo.save(classHour);
+			}
+
+			List<AcademicProgram> academicPrograms = user.getAcademicPrograms();
+
+			for (AcademicProgram academicProgram : academicPrograms) {
+
+			 academicProgram.setUsers(null);
+			 academicProgramRepository.save(academicProgram);
+			}
+			userRepo.delete(user);
+
+		}
+
+
 
 
 

@@ -10,7 +10,7 @@ import com.school.sba.entity.AcademicProgram;
 import com.school.sba.entity.User;
 import com.school.sba.entity.enums.UserRole;
 
-@Repository
+
 public interface IUserRepository extends JpaRepository<User, Integer> {
 
 	boolean existsByUserRole(UserRole userRole);
@@ -21,5 +21,7 @@ public interface IUserRepository extends JpaRepository<User, Integer> {
 	Optional<User> findByUserName(String username);
 	
 	List<User> findByUserRoleAndAcademicPrograms(UserRole role, AcademicProgram academicProgram);
+	
+	List<User> findByIsDeletedIsTrue();
 
 }

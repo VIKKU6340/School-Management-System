@@ -46,4 +46,14 @@ public class SchoolController {
 //		return schoolService.findAllSchool();
 //	}
 	
+	@PreAuthorize("hasAuthority('ADMIN')")
+	@DeleteMapping("schools/{schoolId}")
+	public ResponseEntity<ResponseStructure<SchoolResponse>> softDeleteSchool(@PathVariable Integer schoolId) {
+		ResponseEntity<ResponseStructure<SchoolResponse>> deleteSchool = null;
+
+		deleteSchool = schoolService.softDeleteSchool(schoolId);
+
+		return deleteSchool;
+	}
+	
 }

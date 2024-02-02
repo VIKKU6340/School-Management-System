@@ -99,8 +99,7 @@ public class ScheduleServiceImpl implements IScheduleService{
 		School school = schoolRepository.findById(schoolId)
 				.orElseThrow(() -> new SchoolNotFoundByIdException("School not found"));
 
-		return scheduleRepository.findById(school.getSchedule().getScheduleId())
-				.map(schedule -> {
+		return scheduleRepository.findById(school.getSchedule().getScheduleId()).map(schedule -> {
 					structure.setStatus(HttpStatus.FOUND.value());
 					structure.setMessage("schedule found");
 					structure.setData(mapToScheduleResponse(schedule));

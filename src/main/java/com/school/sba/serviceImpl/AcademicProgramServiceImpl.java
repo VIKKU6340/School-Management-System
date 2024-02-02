@@ -1,9 +1,7 @@
 package com.school.sba.serviceImpl;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,13 +14,15 @@ import com.school.sba.entity.Subject;
 import com.school.sba.exception.AcademicProgramNotFoundException;
 import com.school.sba.exception.SchoolNotFoundByIdException;
 import com.school.sba.repository.IAcademicProgramRepository;
+import com.school.sba.repository.IClassHourRepository;
 import com.school.sba.repository.ISchoolRepository;
 import com.school.sba.repository.ISubjectRepository;
 import com.school.sba.requestdto.AcademicProgramRequest;
-import com.school.sba.requestdto.SubjectRequest;
 import com.school.sba.responsedto.AcademicProgramResponse;
 import com.school.sba.service.IAcademicProgramService;
 import com.school.sba.util.ResponseStructure;
+
+import jakarta.transaction.Transactional;
 
 
 @Service
@@ -42,6 +42,9 @@ public class AcademicProgramServiceImpl implements IAcademicProgramService{
 
 	@Autowired
 	private ResponseStructure<List<AcademicProgramResponse>> listStructure;
+	
+	@Autowired
+	private IClassHourRepository classHourRepo;
 
 	public AcademicProgramResponse mapToAcademicProgramResponse(AcademicProgram academicProgram) {
 		
@@ -73,6 +76,8 @@ public class AcademicProgramServiceImpl implements IAcademicProgramService{
 				.build();
 	}
 
+	
+	
 	@Override
 	public ResponseEntity<ResponseStructure<AcademicProgramResponse>> createProgram(int schoolId,
 			AcademicProgramRequest academicProgramRequest) {
@@ -127,6 +132,34 @@ public class AcademicProgramServiceImpl implements IAcademicProgramService{
 		.orElseThrow(() -> new SchoolNotFoundByIdException("school not found"));
 	}
 	
+	
+	@Override
+	public ResponseEntity<ResponseStructure<AcademicProgramResponse>> softDeleteacademicProgram(Integer programId) {
+		return academicProgramRepository.findById(programId).map(ap -> {
+			if (ap.isDeleted()) {
+				throw new AcademicProgramNotFoundException("academic program already deleted");
+			}
+
+			ap.setDeleted(true);
+			academicProgramRepository.save(ap);
+
+			structure.setStatus(HttpStatus.OK.value());
+			structure.setMessage("academic program deleted successfully");
+			structure.setData(mapToAcademicProgramResponse(ap));
+
+			return new ResponseEntity<ResponseStructure<AcademicProgramResponse>>(structure, HttpStatus.OK);
+		}).orElseThrow(() -> new AcademicProgramNotFoundException("school not found"));
+
+	}
+
+	@Transactional
+	public void hardDeleteAcademicProgram(int academicProgramId) {
+		AcademicProgram ac = academicProgramRepository.findById(academicProgramId).orElseThrow(()-> new AcademicProgramNotFoundException("academic program not found "));
+		classHourRepo.deleteAll(ac.getClassHours());
+		academicProgramRepository.delete(ac);
+	}
+
+
 //	@Override
 //	public ResponseEntity<ResponseStructure<AcademicProgramResponse>> updateSubject(int programId,
 //			SubjectRequest subjectRequest) {
