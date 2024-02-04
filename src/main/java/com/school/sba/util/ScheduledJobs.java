@@ -37,7 +37,7 @@ public class ScheduledJobs {
 	
 	
 	
-	@Scheduled(fixedDelay = 1000l)
+//	@Scheduled(fixedDelay = 1000l)
 	void deleteUser() {
 		
 		List<User> users =userRepo.findByIsDeletedIsTrue();
@@ -48,7 +48,7 @@ public class ScheduledJobs {
 		}
 	}
 		
-		@Scheduled(fixedDelay = 1000l)
+//		@Scheduled(fixedDelay = 1000l)
 		void deleteAcademicProgram() {
 			
 			List<AcademicProgram> programs =academicProgramRepo.findByIsDeletedIsTrue();
