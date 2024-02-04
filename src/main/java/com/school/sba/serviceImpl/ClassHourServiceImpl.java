@@ -40,7 +40,7 @@ public class ClassHourServiceImpl implements IClassHourService{
 
 	@Autowired
 	private IAcademicProgramRepository academicProgramRepo;
-	
+
 	@Autowired
 	private IUserRepository userRepo;
 
@@ -82,10 +82,12 @@ public class ClassHourServiceImpl implements IClassHourService{
 				if ((LocalDate.now().isAfter(starts.toLocalDate())
 						&& LocalDate.now().isBefore(ends.toLocalDate()) == false)
 						&& (LocalDate.now().isAfter(academicProgram.getProgramBeginsAt())
-								&& LocalDate.now().isBefore(academicProgram.getProgramEndsAt()))) { // checking the
-																									// existence of
-																									// class hour must
-																									// be validated
+								&& LocalDate.now().isBefore(academicProgram.getProgramEndsAt()))) { 
+
+					// checking the
+					// existence of
+					// class hour must
+					// be validated
 
 					LocalDate nextSaturday = null;
 					if (LocalDate.now().equals(DayOfWeek.MONDAY) == false) {
@@ -122,8 +124,8 @@ public class ClassHourServiceImpl implements IClassHourService{
 								if (!currentTime.toLocalTime().equals(lunchTimeStart)
 										&& !isLunchTime(currentTime, schedule)) {
 
-									if (!currentTime.toLocalTime().equals(breakTimeStart)
-											&& !isBreakTime(currentTime, schedule)) {
+									if (!currentTime.toLocalTime().equals(breakTimeStart) && !isBreakTime(currentTime, schedule)) 
+									{
 										LocalDateTime beginsAt = currentTime;
 										LocalDateTime endsAt = beginsAt.plusMinutes(classHourLengthInMinutes);
 										System.out.println("inside if start time " + beginsAt);
@@ -145,17 +147,17 @@ public class ClassHourServiceImpl implements IClassHourService{
 									}
 
 								} else {
-									classHour.setBeginsAt(currentTime);
-									classHour.setEndsAt(LocalDateTime.now().with(lunchTimeEnd));
-									classHour.setClassStatus(ClassStatus.LUNCH_TIME);
-									currentTime = currentTime.plusMinutes(schedule.getLunchLengthInMin().toMinutes());
+										classHour.setBeginsAt(currentTime);
+										classHour.setEndsAt(LocalDateTime.now().with(lunchTimeEnd));
+										classHour.setClassStatus(ClassStatus.LUNCH_TIME);
+										currentTime = currentTime.plusMinutes(schedule.getLunchLengthInMin().toMinutes());
 								}
 								classHour.setAcademicPrograms(academicProgram);
 								classHourRepo.save(classHour);
 							}
 							currentTime = currentTime.plusDays(1).with(schedule.getOpensAt());
 						}
-						currentTime = currentTime.plusDays(1);
+						currentTime = currentTime.plusDays(1);	
 					}
 				} else
 					throw new ScheduleAlreadyPresentException("Schedule Already Presnt for this week");
@@ -169,8 +171,8 @@ public class ClassHourServiceImpl implements IClassHourService{
 			return new ResponseEntity<ResponseStructure<String>>(structure, HttpStatus.CREATED);
 		}).orElseThrow(() -> new AcademicProgramNotFoundException("academic program not found"));
 	}
-	
-	
+
+
 	private List<ClassHourResponse> mapTOListOfClassHourResponse(List<ClassHour> listOfClassHours) {
 		List<ClassHourResponse> listOfClassHourResponse = new ArrayList<>();
 
@@ -193,7 +195,7 @@ public class ClassHourServiceImpl implements IClassHourService{
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
+
 	@Override
 	public ResponseEntity<ResponseStructure<String>> duplicateClassHoursForNextWeek(int programId) {
 		AcademicProgram academicProgram = academicProgramRepo.findById(programId)
@@ -207,33 +209,33 @@ public class ClassHourServiceImpl implements IClassHourService{
 
 		return new ResponseEntity<>(structure, HttpStatus.CREATED);
 	}
-	
-	
+
+
 	public void duplicateClassHoursForNextWeek(AcademicProgram academicProgram) {
-        List<ClassHour> classHoursForCurrentWeek = classHourRepo.findByAcademicProgramAndBeginsAtAfterAndBeginsAtBefore(
-        		academicProgram,
-                LocalDateTime.now().with(DayOfWeek.MONDAY).truncatedTo(ChronoUnit.DAYS),
-                LocalDateTime.now().with(DayOfWeek.SUNDAY).plusDays(1).truncatedTo(ChronoUnit.DAYS)   
-        );
+		List<ClassHour> classHoursForCurrentWeek = classHourRepo.findByAcademicProgramAndBeginsAtAfterAndBeginsAtBefore(
+				academicProgram,
+				LocalDateTime.now().with(DayOfWeek.MONDAY).truncatedTo(ChronoUnit.DAYS),
+				LocalDateTime.now().with(DayOfWeek.SUNDAY).plusDays(1).truncatedTo(ChronoUnit.DAYS)   
+				);
 
-        List<ClassHour> duplicatedClassHoursForNextWeek = new ArrayList<>();
+		List<ClassHour> duplicatedClassHoursForNextWeek = new ArrayList<>();
 
-        for (ClassHour classHour : classHoursForCurrentWeek) {
-            ClassHour duplicatedClassHour = ClassHour.builder()
-                    .academicPrograms(academicProgram)
-                    .subject(classHour.getSubject())
-                    .beginsAt(classHour.getBeginsAt().plusWeeks(1))
-                    .endsAt(classHour.getEndsAt().plusWeeks(1))
-                    .roomNo(classHour.getRoomNo())
-                    .classStatus(classHour.getClassStatus())
-                    .user(classHour.getUser())
-                    .build();
+		for (ClassHour classHour : classHoursForCurrentWeek) {
+			ClassHour duplicatedClassHour = ClassHour.builder()
+					.academicPrograms(academicProgram)
+					.subject(classHour.getSubject())
+					.beginsAt(classHour.getBeginsAt().plusWeeks(1))
+					.endsAt(classHour.getEndsAt().plusWeeks(1))
+					.roomNo(classHour.getRoomNo())
+					.classStatus(classHour.getClassStatus())
+					.user(classHour.getUser())
+					.build();
 
-            duplicatedClassHoursForNextWeek.add(duplicatedClassHour);
-        }
+			duplicatedClassHoursForNextWeek.add(duplicatedClassHour);
+		}
 
-        classHourRepo.saveAll(duplicatedClassHoursForNextWeek);
-    }
+		classHourRepo.saveAll(duplicatedClassHoursForNextWeek);
+	}
 
 
 }

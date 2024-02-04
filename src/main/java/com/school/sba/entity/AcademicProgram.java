@@ -28,34 +28,35 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AcademicProgram {
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int programId;
-	
+
 	@Enumerated(EnumType.STRING)
 	private ProgramType programType;
 	private String programName;
 	private LocalDate programBeginsAt;
 	private LocalDate programEndsAt;
 	private boolean isDeleted;
+
 	private boolean autoRepeat;
-	
-	
+
+
 	@ManyToOne
 	@JoinColumn(name = "schoolId")
 	private School school;
-	
+
 	@ManyToMany
-//	@JoinColumn(name = "subjectId")
+	//	@JoinColumn(name = "subjectId")
 	private List<Subject> listOfSubject;
-	
+
 	@ManyToMany(mappedBy = "academicPrograms")
 	private List<User> users;
-	
+
 	@OneToMany(mappedBy = "academicProgram")
 	private List<ClassHour> classHours;
-	
-	
+
+
 
 }
