@@ -59,7 +59,7 @@ public class ScheduledJobs {
 			}
 	}
 		
-		@Scheduled(cron = "0 0 0 ? * MON")
+		@Scheduled(cron = "0 0 0 * * MON")
 		void classHourWeekly() {
 			
 			AcademicProgram ap = academicProgramRepo.findById(1).orElseThrow();
@@ -67,7 +67,7 @@ public class ScheduledJobs {
 			if(ap.isAutoRepeat()) {
 				
 				
-				chi.duplicateClassHoursForNextWeek(ap);
+				chi.duplicateClassHoursForThisWeek(ap);
 				
 			}
 			

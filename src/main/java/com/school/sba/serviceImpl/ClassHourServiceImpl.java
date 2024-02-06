@@ -54,7 +54,7 @@ public class ClassHourServiceImpl implements IClassHourService{
 
 	@Autowired
 	private ISubjectRepository subjectRepo;
-	
+
 	@Autowired
 	private ResponseStructure<List<ClassHourResponse>> listStructure;
 
@@ -210,15 +210,15 @@ public class ClassHourServiceImpl implements IClassHourService{
 
 		return new ResponseEntity<ResponseStructure<List<ClassHourResponse>>>(listStructure, HttpStatus.FOUND);
 
-}
+	}
 
 
 	@Override
-	public ResponseEntity<ResponseStructure<String>> duplicateClassHoursForNextWeek(int programId) {
+	public ResponseEntity<ResponseStructure<String>> duplicateClassHoursForThisWeek(int programId) {
 		AcademicProgram academicProgram = academicProgramRepo.findById(programId)
 				.orElseThrow(() -> new AcademicProgramNotFoundException("Academic program not found"));
 
-		duplicateClassHoursForNextWeek(academicProgram);
+		duplicateClassHoursForThisWeek(academicProgram);
 
 		structure.setStatus(HttpStatus.CREATED.value());
 		structure.setMessage("Class hours duplicated for the next week successfully");
@@ -228,16 +228,16 @@ public class ClassHourServiceImpl implements IClassHourService{
 	}
 
 
-	public void duplicateClassHoursForNextWeek(AcademicProgram academicProgram) {
-		List<ClassHour> classHoursForCurrentWeek = classHourRepo.findByAcademicProgramAndBeginsAtAfterAndBeginsAtBefore(
-				academicProgram,
-				LocalDateTime.now().with(DayOfWeek.MONDAY).truncatedTo(ChronoUnit.DAYS),
-				LocalDateTime.now().with(DayOfWeek.SUNDAY).plusDays(1).truncatedTo(ChronoUnit.DAYS)   
-				);
+	public void duplicateClassHoursForThisWeek(AcademicProgram academicProgram) {
+		List<ClassHour> classHoursOfPreviousWeek = classHourRepo.findByAcademicProgramAndBeginsAtAfterAndBeginsAtBefore(
 
-		List<ClassHour> duplicatedClassHoursForNextWeek = new ArrayList<>();
 
-		for (ClassHour classHour : classHoursForCurrentWeek) {
+				academicProgram, LocalDateTime.now().with(DayOfWeek.MONDAY).truncatedTo(ChronoUnit.DAYS).minusWeeks(1),
+				LocalDateTime.now().with(DayOfWeek.SUNDAY).truncatedTo(ChronoUnit.DAYS).minusWeeks(1));
+
+		List<ClassHour> duplicatedClassHoursForThisWeek  = new ArrayList<>();
+
+		for (ClassHour classHour : classHoursOfPreviousWeek) {
 			ClassHour duplicatedClassHour = ClassHour.builder()
 					.academicPrograms(academicProgram)
 					.subject(classHour.getSubject())
@@ -248,10 +248,10 @@ public class ClassHourServiceImpl implements IClassHourService{
 					.user(classHour.getUser())
 					.build();
 
-			duplicatedClassHoursForNextWeek.add(duplicatedClassHour);
+			duplicatedClassHoursForThisWeek.add(duplicatedClassHour);
 		}
 
-		classHourRepo.saveAll(duplicatedClassHoursForNextWeek);
+		classHourRepo.saveAll(duplicatedClassHoursForThisWeek);
 	}
 
 
