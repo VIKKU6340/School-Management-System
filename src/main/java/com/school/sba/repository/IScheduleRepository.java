@@ -5,7 +5,7 @@ import org.springframework.stereotype.Repository;
 
 import com.school.sba.entity.Schedule;
 
-@Repository
+
 public interface IScheduleRepository extends JpaRepository<Schedule, Integer>{
 
 }

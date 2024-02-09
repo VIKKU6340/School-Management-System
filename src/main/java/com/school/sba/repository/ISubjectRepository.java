@@ -10,11 +10,13 @@ import org.springframework.stereotype.Repository;
 
 import com.school.sba.entity.Subject;
 
-@Repository
+
 public interface ISubjectRepository extends JpaRepository<Subject, Integer>{
 
 	Optional<Subject> findBySubjectName(String subject);
 
+	
+	
 //	@Query(nativeQuery = true, value = "")
 //	List<Subject> findAllByProgramId(int programId);
 

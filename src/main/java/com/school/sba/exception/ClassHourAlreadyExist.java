@@ -5,10 +5,8 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class SchoolInsertionFailedException extends RuntimeException {
+public class ClassHourAlreadyExist extends RuntimeException{
 
-	private static final long serialVersionUID = 1L;
-	
 	private String message;
 
 }

@@ -1,7 +1,9 @@
 package com.school.sba.serviceImpl;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,6 +16,7 @@ import com.school.sba.repository.IAcademicProgramRepository;
 import com.school.sba.repository.ISubjectRepository;
 import com.school.sba.requestdto.SubjectRequest;
 import com.school.sba.responsedto.AcademicProgramResponse;
+import com.school.sba.responsedto.SubjectResponse;
 import com.school.sba.service.ISubjectService;
 import com.school.sba.util.ResponseStructure;
 
@@ -31,8 +34,28 @@ public class SubjectServiceImpl implements ISubjectService{
 	private ResponseStructure<AcademicProgramResponse> structure;
 	
 	@Autowired
+	private ResponseStructure<List<SubjectResponse>> listStructure;
+	
+	@Autowired
 	private AcademicProgramServiceImpl academicProgramServiceImpl;
+	
+	
+	
+	private List<SubjectResponse> mapTOListOfSubjectResponse(List<Subject> listOfSubjects) {
+		List<SubjectResponse> listOfSubjectResponse = new ArrayList<>();
 
+		listOfSubjects.forEach(subject -> {
+			SubjectResponse sr = new SubjectResponse();
+			sr.setSubjectId(subject.getSubjectId());
+			sr.setSubjectNames(subject.getSubjectName()); 
+			listOfSubjectResponse.add(sr);
+		});
+
+		return listOfSubjectResponse;
+	}
+
+
+	
 	@Override
 	public ResponseEntity<ResponseStructure<AcademicProgramResponse>> addSubject(int programId, SubjectRequest subjectRequest) {
 		return academicProgramRepository.findById(programId)
@@ -64,6 +87,8 @@ public class SubjectServiceImpl implements ISubjectService{
 				.orElseThrow(() -> new AcademicProgramNotFoundException("academic program not found"));
 
 	}
+
+
 
 //	@Override
 //	public ResponseEntity<ResponseStructure<AcademicProgramResponse>> updateSubject(int programId,
@@ -131,6 +156,26 @@ public class SubjectServiceImpl implements ISubjectService{
 //		.orElseThrow(() -> new AcademicProgramNotFoundException("academic program not found"));
 //	
 //	}
+
+	@Override
+	public ResponseEntity<ResponseStructure<List<SubjectResponse>>> findAllSubjects() {
+		List<Subject> listOfSubjects = subjectRepository.findAll();
+
+		if(listOfSubjects.isEmpty()) {
+			listStructure.setStatus(HttpStatus.NOT_FOUND.value());
+			listStructure.setMessage("No subjects found");
+			listStructure.setData(mapTOListOfSubjectResponse(listOfSubjects));
+
+			return new ResponseEntity<ResponseStructure<List<SubjectResponse>>>(listStructure, HttpStatus.NOT_FOUND);
+		}
+		else {
+			listStructure.setStatus(HttpStatus.FOUND.value());
+			listStructure.setMessage("list of subjects found");
+			listStructure.setData(mapTOListOfSubjectResponse(listOfSubjects));
+
+			return new ResponseEntity<ResponseStructure<List<SubjectResponse>>>(listStructure, HttpStatus.FOUND);
+		}
+	}
 
 
 }

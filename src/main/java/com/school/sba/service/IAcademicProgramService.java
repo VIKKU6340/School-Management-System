@@ -16,6 +16,11 @@ public interface IAcademicProgramService {
 
 	ResponseEntity<ResponseStructure<List<AcademicProgramResponse>>> findAllAcademicProgram(int schoolId);
 
-	ResponseEntity<ResponseStructure<AcademicProgramResponse>> updateSubject(int programId,
-			SubjectRequest subjectRequest);
+
+	ResponseEntity<ResponseStructure<AcademicProgramResponse>> softDeleteacademicProgram(Integer programId);
+	
+//	ResponseEntity<ResponseStructure<AcademicProgramResponse>> updateSubject(int programId,
+//	SubjectRequest subjectRequest);
+
+	
 }

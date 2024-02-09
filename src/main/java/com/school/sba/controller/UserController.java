@@ -1,7 +1,10 @@
 package com.school.sba.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,20 +27,28 @@ public class UserController {
 	private lUserService userService;
 	
 	@PostMapping("/users/register")
-	public ResponseEntity<ResponseStructure<UserResponse>> saveUser(@RequestBody UserRequest userRequest){
-		ResponseEntity<ResponseStructure<UserResponse>> rs = userService.saveUser(userRequest);
+	public ResponseEntity<ResponseStructure<UserResponse>> registerAdmin(@RequestBody UserRequest userRequest) {
+		ResponseEntity<ResponseStructure<UserResponse>> rs = userService.registerAdmin(userRequest);
 		return rs;
 	}
 	
+	@PreAuthorize("hasAuthority('ADMIN')")
+	@PostMapping("/users")
+	public ResponseEntity<ResponseStructure<UserResponse>> addOtherUser(@RequestBody UserRequest userRequest){
+		return userService.addOtherUser(userRequest);
+	}
+
+	
 	@GetMapping("users/{userId}")
 	public ResponseEntity<ResponseStructure<UserResponse>> findUser(@PathVariable Integer userId){
+		
 		ResponseEntity<ResponseStructure<UserResponse>> findUser = null;
 
 		findUser = userService.findUser(userId);
-
 		return findUser;
 	}
 	
+	@PreAuthorize("hasAuthority('ADMIN')")
 	@DeleteMapping("users/{userId}")
 	public ResponseEntity<ResponseStructure<UserResponse>> softDeleteUser(@PathVariable Integer userId){
 		ResponseEntity<ResponseStructure<UserResponse>> deleteUser = null;
@@ -47,18 +58,36 @@ public class UserController {
 		return deleteUser;
 	}
 	
+	@PreAuthorize("hasAuthority('ADMIN')")
 	@PutMapping("/users/{userId}")
 	public ResponseEntity<ResponseStructure<UserResponse>> updateUser(@PathVariable("userId") int userId,
 			@RequestBody UserRequest userRequest){
 		return userService.updateUser(userId, userRequest);
 	}
 
+	
+	@PreAuthorize("hasAuthority('ADMIN')")
 	@PutMapping(" /academic-programs/{programId}/users/{userId}")
 	public ResponseEntity<ResponseStructure<UserResponse>> addUserToProgram(@PathVariable Integer programId,
 			@PathVariable Integer userId){
 		ResponseEntity<ResponseStructure<UserResponse>> AssignUser=null;;
-		AssignUser = userService.addUserToProgram(programId,userId);
+		AssignUser = userService.assignUserToProgram(programId,userId);
 		return AssignUser;
 			
 	}
+	
+
+	@PreAuthorize("hasAuthority('ADMIN')")
+	@PutMapping("/subjects/{subjectId}/users/{userId}")
+	public ResponseEntity<ResponseStructure<UserResponse>> assignSubjectToTeacher(@PathVariable("subjectId") int subjectId,
+			@PathVariable("userId") int userId){
+		return userService.assignSubjectToTeacher(subjectId,userId);
+	}
+	
+	@GetMapping("/academic-programs/{programId}/user-roles/{role}/users")
+	public ResponseEntity<ResponseStructure<List<UserResponse>>> getUsersByRoleAndAcademicProgram(@PathVariable("programId") int programId,
+			@PathVariable String role){
+		return userService.getUsersByRoleAndAcademicProgram(programId, role);
+	}
+
 }
