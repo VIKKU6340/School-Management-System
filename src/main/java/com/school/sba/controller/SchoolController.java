@@ -25,7 +25,7 @@ public class SchoolController {
 		
 	@PreAuthorize("hasAuthority('ADMIN')")
 	@PostMapping("/users/schools")
-	public ResponseEntity<ResponseStructure<SchoolResponse>> saveSchool(@PathVariable Integer userId, @RequestBody SchoolRequest schoolRequest){
+	public ResponseEntity<ResponseStructure<SchoolResponse>> saveSchool(@RequestBody SchoolRequest schoolRequest){
 		return schoolService.saveSchool(schoolRequest);
 
 	}
@@ -34,6 +34,16 @@ public class SchoolController {
 	@PutMapping("/{schoolId}")
 	public ResponseEntity<ResponseStructure<SchoolResponse>> updateSchool(@PathVariable Integer schoolId, @RequestBody SchoolRequest schoolRequest){
 		return schoolService.updateSchool(schoolId, schoolRequest);
+	}
+	
+	@PreAuthorize("hasAuthority('ADMIN')")
+	@DeleteMapping("schools/{schoolId}")
+	public ResponseEntity<ResponseStructure<SchoolResponse>> softDeleteSchool(@PathVariable Integer schoolId) {
+		ResponseEntity<ResponseStructure<SchoolResponse>> deleteSchool = null;
+
+		deleteSchool = schoolService.softDeleteSchool(schoolId);
+
+		return deleteSchool;
 	}
 	
 //	@GetMapping("/{schoolId}")
@@ -46,14 +56,6 @@ public class SchoolController {
 //		return schoolService.findAllSchool();
 //	}
 	
-	@PreAuthorize("hasAuthority('ADMIN')")
-	@DeleteMapping("schools/{schoolId}")
-	public ResponseEntity<ResponseStructure<SchoolResponse>> softDeleteSchool(@PathVariable Integer schoolId) {
-		ResponseEntity<ResponseStructure<SchoolResponse>> deleteSchool = null;
-
-		deleteSchool = schoolService.softDeleteSchool(schoolId);
-
-		return deleteSchool;
-	}
+	
 	
 }

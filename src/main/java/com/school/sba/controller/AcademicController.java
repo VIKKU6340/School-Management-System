@@ -38,13 +38,6 @@ public class AcademicController {
 		return academicProgramService.findAllAcademicProgram(schoolId);
 	}
 	
-//	@PutMapping("/academic-programs/{programId}")
-//	public ResponseEntity<ResponseStructure<AcademicProgramResponse>> updateSubject(@PathVariable("programId") int programId,
-//			@RequestBody SubjectRequest subjectRequest){
-//		return academicProgramService.updateSubject(programId, subjectRequest);
-//	}
-//	
-	
 	@PreAuthorize("hasAuthority('ADMIN')")
 	@DeleteMapping("academic-programs/{programId}")
 	public ResponseEntity<ResponseStructure<AcademicProgramResponse>> softDeleteSchool(@PathVariable Integer programId) {
@@ -54,4 +47,12 @@ public class AcademicController {
 
 		return deleteProgram;
 	}
+	
+//	@PutMapping("/academic-programs/{programId}")
+//	public ResponseEntity<ResponseStructure<AcademicProgramResponse>> updateSubject(@PathVariable("programId") int programId,
+//			@RequestBody SubjectRequest subjectRequest){
+//		return academicProgramService.updateSubject(programId, subjectRequest);
+//	}
+//	
+	
 }

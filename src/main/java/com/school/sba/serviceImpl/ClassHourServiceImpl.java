@@ -242,8 +242,6 @@ public class ClassHourServiceImpl implements IClassHourService{
 
 	public void duplicateClassHoursForThisWeek(AcademicProgram academicProgram) {
 		List<ClassHour> classHoursOfPreviousWeek = classHourRepo.findByAcademicProgramAndBeginsAtAfterAndBeginsAtBefore(
-
-
 				academicProgram, LocalDateTime.now().with(DayOfWeek.MONDAY).truncatedTo(ChronoUnit.DAYS).minusWeeks(1),
 				LocalDateTime.now().with(DayOfWeek.SUNDAY).truncatedTo(ChronoUnit.DAYS).minusWeeks(1));
 
